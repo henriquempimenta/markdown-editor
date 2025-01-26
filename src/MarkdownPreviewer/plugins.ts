@@ -1,6 +1,7 @@
-import { Decoration, DecorationSet, Range, ViewPlugin, ViewUpdate } from '@uiw/react-codemirror'
+import { Decoration, DecorationSet, Range, ViewPlugin, ViewUpdate, WidgetType } from '@uiw/react-codemirror'
 import { EditorView } from '@uiw/react-codemirror'
 import { syntaxTree } from '@codemirror/language'
+import katex from 'katex'
 
 const hideRed = Decoration.mark({
   attributes: {
@@ -32,6 +33,144 @@ type liteNode = {
   to: number
 }
 
+//////////////////////////////////////////////
+// BEGIN: Latex Render Plugin
+//////////////////////////////////////////////
+
+const LATEX_TAGS = ["InlineMathDollar", "InlineMathBracket", "BlockMathDollar", "BlockMathBracket"]
+const LATEX_MARKERS_TAGS = LATEX_TAGS.map(tag => `${tag}Mark`)
+
+class LatetWidget extends WidgetType {
+  constructor(readonly math: string, readonly displayMode: boolean = false){
+    super()
+  }
+
+  eq(other: LatetWidget) {
+    return other.math === this.math
+  }
+
+  toDOM(): HTMLElement {
+    const span = document.createElement('span')
+    try {
+      katex.render(this.math, span, {
+        throwOnError: false,
+        output: 'mathml',
+        displayMode: this.displayMode
+      })
+    } catch (e) {
+      console.error(e)
+    }
+    return span
+  }
+
+  ignoreEvent() {
+    return false
+  }
+}
+
+function latexRender(view: EditorView) {
+  const widgets: Range<Decoration>[] = []
+  let nodeBefore: liteNode | null = null
+  const text = view.state.doc.toString()
+  const cursorPos = view.state.selection.main.head
+  for (const {from, to} of view.visibleRanges) {
+    syntaxTree(view.state).iterate({
+      from, to,
+      enter: (node) => {
+        if (nodeBefore === null) {
+          return
+        }
+        if (!LATEX_MARKERS_TAGS.includes(node.type.name)) {
+          return
+        }
+        if (!LATEX_MARKERS_TAGS.includes(nodeBefore.name)) {
+          return
+        }
+        
+        if ((nodeBefore.from <= cursorPos && cursorPos <= node.to)) {
+          return
+        } 
+        const math = text.substring(nodeBefore.to, node.from)
+        const latexDecoration = Decoration.widget({
+            widget: new LatetWidget(math, node.type.name.startsWith("Block")),
+            side: 1
+          })
+        widgets.push(latexDecoration.range(node.to))
+      },
+      leave(node) {
+        nodeBefore = structuredClone({name: node.name, from: node.from, to: node.to})
+      },
+    })
+  }
+  return Decoration.set(widgets)
+}
+
+export const latexRenderPlugin = ViewPlugin.fromClass(class {
+  decorations: DecorationSet
+
+  constructor(view: EditorView) {
+    this.decorations = latexRender(view)
+  }
+
+  update(update: ViewUpdate) {
+    this.decorations = latexRender(update.view)
+  }
+}, {
+  decorations: instance => instance.decorations
+})
+
+//////////////////////////////////////////////
+// END: Latex Render Plugin
+//////////////////////////////////////////////
+
+
+//////////////////////////////////////////////
+// BEGIN: Latex Hide Plugin
+//////////////////////////////////////////////
+
+function latexHide(view: EditorView) {
+  const marks: Range<Decoration>[] = []
+  const cursorPos = view.state.selection.main.head
+  for (const {from, to} of view.visibleRanges) {
+    syntaxTree(view.state).iterate({
+      from, to,
+      enter: (node) => {
+        if (!LATEX_TAGS.includes(node.type.name)) {
+          return
+        }
+        if ((node.from <= cursorPos && cursorPos <= node.to)) {
+          return
+        }
+        marks.push(
+          hideRed.range(node.from, node.to)
+        )
+      },
+    })
+  }
+  return Decoration.set(marks)
+}
+
+export const latexHidePlugin = ViewPlugin.fromClass(class {
+  decorations: DecorationSet
+
+  constructor(view: EditorView) {
+    this.decorations = latexHide(view)
+  }
+
+  update(update: ViewUpdate) {
+    this.decorations = latexHide(update.view)
+  }
+
+}, {
+  decorations: instance => instance.decorations
+})
+
+
+//////////////////////////////////////////////
+// END: Latex Hide Plugin
+//////////////////////////////////////////////
+
+
 function resizeHeaders(view: EditorView) {
   const marks: Range<Decoration>[] = []
   for (const {from, to} of view.visibleRanges) {
@@ -60,9 +199,9 @@ function resizeHeaders(view: EditorView) {
 function hideHeadersMarkers(view: EditorView) {
   const marks: Range<Decoration>[] = []
   const dont: (number | undefined)[] = []
-  const pos = view.state.selection.main.head
+  const cursorPos = view.state.selection.main.head
   
-  const node = syntaxTree(view.state).resolve(pos, 1)
+  const node = syntaxTree(view.state).resolve(cursorPos, 1)
   const ATXHorMark = (node.name.startsWith("ATXHeading") || node.name == "HeaderMark" )?
     node: null
 
@@ -89,7 +228,7 @@ function hideHeadersMarkers(view: EditorView) {
 function hideEmphasisMarkers(view: EditorView) {
   const marks: Range<Decoration>[] = []
   let nodeBefore: liteNode | null = null
-  const pos = view.state.selection.main.head
+  const cursorPos = view.state.selection.main.head
   for (const {from, to} of view.visibleRanges) {
     syntaxTree(view.state).iterate({
       from, to,
@@ -103,7 +242,7 @@ function hideEmphasisMarkers(view: EditorView) {
         if (nodeBefore.name !== node.name) {
           return
         }
-        if ((nodeBefore.from <= pos && pos <= node.to)) {
+        if ((nodeBefore.from <= cursorPos && cursorPos <= node.to)) {
           return
         }
         if (nodeBefore.from == node.to) {
@@ -159,7 +298,6 @@ function codeMono(view: EditorView) {
     syntaxTree(view.state).iterate({
       from, to,
       enter: (node) => {
-        //console.log(node.type)
         if (!['FencedCode', 'CodeText', 'InlineCode'].includes(node.name)) {
           return
         }

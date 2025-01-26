@@ -1,35 +1,43 @@
-import CodeMirror from '@uiw/react-codemirror'
+import { codeMonoPlugin, hideHeadersMarkersPlugin, hidePlugin, resizeHeadersPlugin, latexRenderPlugin, latexHidePlugin as latexHidePlugin } from './plugins'
+import CodeMirror, { EditorView, Extension } from '@uiw/react-codemirror';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
-import { EditorView } from '@uiw/react-codemirror'
-import { codeMonoPlugin, hideHeadersMarkersPlugin, hidePlugin, resizeHeadersPlugin } from './plugins'
+import { markdownMathSupport } from './markdownMathSupport';
 import './style.css'
+
+const CODE_MIRROR_EXTENSIONS: Extension[] = [
+  markdown({ base: markdownLanguage, extensions: markdownMathSupport }),
+  hidePlugin,
+  resizeHeadersPlugin,
+  codeMonoPlugin,
+  hideHeadersMarkersPlugin,
+  latexRenderPlugin,
+  latexHidePlugin,
+];
+
+const EDITOR_VIEW_THEME: Extension = EditorView.theme({
+  '.cm-scroller': {
+    overflow: 'hidden',
+    fontFamily: '"Roboto", sans-serif',
+  },
+  '.cm-lineNumbers': {
+    display: 'none',
+  },
+  '.cm-gutters': {
+    display: 'none',
+  },
+  '.cm-activeLine': {
+    backgroundColor: 'unset',
+  },
+});
 
 export default function MarkdownPreview() {
   return (
     <CodeMirror
       extensions={[
-        markdown({ base: markdownLanguage }),
-        hidePlugin,
-        resizeHeadersPlugin,
-        codeMonoPlugin,
-        hideHeadersMarkersPlugin,
+        ...CODE_MIRROR_EXTENSIONS,
         EditorView.lineWrapping,
-        EditorView.theme({
-          '.cm-scroller': {
-            overflow: 'hidden',
-            fontFamily: '"Roboto", sans-serif',
-          },
-          '.cm-lineNumbers': {
-            display: 'none',
-          },
-          '.cm-gutters': {
-            display: 'none',
-          },
-          '.cm-activeLine': {
-            backgroundColor: 'unset',
-          },
-        }),
+        EDITOR_VIEW_THEME,
       ]}
-      />
-  )
+    />
+  );
 }
