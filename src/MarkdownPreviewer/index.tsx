@@ -1,4 +1,4 @@
-import { codeMonoPlugin, hideHeadersMarkersPlugin, hidePlugin, resizeHeadersPlugin, latexRenderPlugin, latexHidePlugin as latexHidePlugin } from './plugins'
+import { codeMonoPlugin, hideHeadersMarkersPlugin, hideMarkersPairsPlugin, resizeHeadersPlugin, latexRenderPlugin, latexHidePlugin as latexHidePlugin } from './plugins'
 import CodeMirror, { EditorView, Extension } from '@uiw/react-codemirror';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { markdownMathSupport } from './markdownMathSupport';
@@ -6,7 +6,7 @@ import './style.css'
 
 const CODE_MIRROR_EXTENSIONS: Extension[] = [
   markdown({ base: markdownLanguage, extensions: markdownMathSupport }),
-  hidePlugin,
+  hideMarkersPairsPlugin,
   resizeHeadersPlugin,
   codeMonoPlugin,
   hideHeadersMarkersPlugin,

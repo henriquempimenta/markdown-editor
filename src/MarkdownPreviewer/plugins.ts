@@ -1,7 +1,9 @@
 import { Decoration, DecorationSet, Range, ViewPlugin, ViewUpdate, WidgetType } from '@uiw/react-codemirror'
+import { DELIMITER_LENGTH } from './markdownMathSupport'
 import { EditorView } from '@uiw/react-codemirror'
 import { syntaxTree } from '@codemirror/language'
 import katex from 'katex'
+import 'katex/dist/katex.min.css'
 
 const hideRed = Decoration.mark({
   attributes: {
@@ -38,7 +40,6 @@ type liteNode = {
 //////////////////////////////////////////////
 
 const LATEX_TAGS = ["InlineMathDollar", "InlineMathBracket", "BlockMathDollar", "BlockMathBracket"]
-const LATEX_MARKERS_TAGS = LATEX_TAGS.map(tag => `${tag}Mark`)
 
 class LatetWidget extends WidgetType {
   constructor(readonly math: string, readonly displayMode: boolean = false){
@@ -54,7 +55,7 @@ class LatetWidget extends WidgetType {
     try {
       katex.render(this.math, span, {
         throwOnError: false,
-        output: 'mathml',
+        output: 'html',
         displayMode: this.displayMode
       })
     } catch (e) {
@@ -70,36 +71,28 @@ class LatetWidget extends WidgetType {
 
 function latexRender(view: EditorView) {
   const widgets: Range<Decoration>[] = []
-  let nodeBefore: liteNode | null = null
   const text = view.state.doc.toString()
   const cursorPos = view.state.selection.main.head
   for (const {from, to} of view.visibleRanges) {
     syntaxTree(view.state).iterate({
       from, to,
       enter: (node) => {
-        if (nodeBefore === null) {
+        if (!LATEX_TAGS.includes(node.type.name)) {
           return
         }
-        if (!LATEX_MARKERS_TAGS.includes(node.type.name)) {
-          return
-        }
-        if (!LATEX_MARKERS_TAGS.includes(nodeBefore.name)) {
-          return
-        }
-        
-        if ((nodeBefore.from <= cursorPos && cursorPos <= node.to)) {
+        if ((node.from <= cursorPos && cursorPos <= node.to)) {
           return
         } 
-        const math = text.substring(nodeBefore.to, node.from)
+        const math = text.substring(
+          node.from + DELIMITER_LENGTH[node.type.name],
+          node.to - DELIMITER_LENGTH[node.type.name]
+        )
         const latexDecoration = Decoration.widget({
             widget: new LatetWidget(math, node.type.name.startsWith("Block")),
             side: 1
           })
         widgets.push(latexDecoration.range(node.to))
-      },
-      leave(node) {
-        nodeBefore = structuredClone({name: node.name, from: node.from, to: node.to})
-      },
+      }
     })
   }
   return Decoration.set(widgets)
@@ -171,6 +164,75 @@ export const latexHidePlugin = ViewPlugin.fromClass(class {
 //////////////////////////////////////////////
 
 
+//////////////////////////////////////////////
+// BEGIN: SyntaxTree Hierarchy Plugin
+//////////////////////////////////////////////
+
+/**
+ * A function to extract the syntax tree hierarchy from a given editor view.
+ *
+ * @param {EditorView} view - The CodeMirror EditorView instance.
+ * @returns {{ name: string, from: number, to: number, text: string }[]} An array of objects representing the syntax tree nodes.
+ */
+function syntaxTreeHierarchy(view: EditorView): { name: string; from: number; to: number; text: string }[] {
+  const hierarchy: { name: string; from: number; to: number; text: string }[] = []
+  for (const {from, to} of view.visibleRanges) {
+    syntaxTree(view.state).iterate({
+      from, to,
+      enter: (node) => {
+        hierarchy.push({
+          name: node.type.name,
+          from: node.from,
+          to: node.to,
+          text: view.state.doc.sliceString(node.from, node.to)
+        })
+      },
+    })
+  }
+  return hierarchy
+}
+
+/**
+ * A CodeMirror plugin that logs the syntax tree hierarchy of the editor content.
+ */
+export const syntaxTreeHierarchyPlugin = ViewPlugin.fromClass(class {
+  /**
+   * Initializes the plugin and performs an initial action on the editor view.
+   *
+   * @param {EditorView} view - The CodeMirror EditorView instance.
+   */
+  constructor(view: EditorView) {
+    this.action(view)
+  }
+
+  /**
+   * Extracts and logs the syntax tree hierarchy from the given editor view.
+   *
+   * @param {EditorView} view - The CodeMirror EditorView instance.
+   */
+  action(view: EditorView){
+    const hierarchy = syntaxTreeHierarchy(view)
+    console.log(hierarchy)
+  }
+
+  /**
+   * Updates the plugin when the editor content changes.
+   *
+   * @param {ViewUpdate} update - An object containing information about the update.
+   */
+  update(update: ViewUpdate) {
+    if (update.docChanged) {
+      this.action(update.view)
+    }
+  }
+
+})
+
+//////////////////////////////////////////////
+// END: SyntaxTree Hierarchy Plugin
+//////////////////////////////////////////////
+
+
 function resizeHeaders(view: EditorView) {
   const marks: Range<Decoration>[] = []
   for (const {from, to} of view.visibleRanges) {
@@ -225,7 +287,7 @@ function hideHeadersMarkers(view: EditorView) {
   return Decoration.set(marks)
 }
 
-function hideEmphasisMarkers(view: EditorView) {
+function hideMarkersPairs(view: EditorView) {
   const marks: Range<Decoration>[] = []
   let nodeBefore: liteNode | null = null
   const cursorPos = view.state.selection.main.head
@@ -262,15 +324,15 @@ function hideEmphasisMarkers(view: EditorView) {
   return Decoration.set(marks)
 }
 
-export const hidePlugin = ViewPlugin.fromClass(class {
+export const hideMarkersPairsPlugin = ViewPlugin.fromClass(class {
   decorations: DecorationSet
 
   constructor(view: EditorView) {
-    this.decorations = hideEmphasisMarkers(view)
+    this.decorations = hideMarkersPairs(view)
   }
 
   update(update: ViewUpdate) {
-    this.decorations = hideEmphasisMarkers(update.view)
+    this.decorations = hideMarkersPairs(update.view)
   }
 
 }, {
