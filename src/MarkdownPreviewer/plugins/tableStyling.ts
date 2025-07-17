@@ -2,13 +2,15 @@ import { Decoration, DecorationSet, EditorView, ViewPlugin, ViewUpdate, WidgetTy
 import { syntaxTree } from "@codemirror/language";
 import { Range } from "@codemirror/state";
 
+type Alignment = 'left' | 'center' | 'right';
+
 class TableWidget extends WidgetType {
-  constructor(readonly headers: string[], readonly rows: string[][]) {
+  constructor(readonly headers: string[], readonly rows: string[][], readonly alignments: Alignment[]) {
     super()
   }
 
   eq(other: TableWidget): boolean {
-    if (other.headers.length !== this.headers.length || other.rows.length !== this.rows.length) {
+    if (other.headers.length !== this.headers.length || other.rows.length !== this.rows.length || other.alignments.join(',') !== this.alignments.join(',')) {
         return false;
     }
     if (other.headers.join(',') !== this.headers.join(',')) {
@@ -28,9 +30,10 @@ class TableWidget extends WidgetType {
 
     const thead = table.createTHead();
     const headerRow = thead.insertRow();
-    for (const headerText of this.headers) {
+    for (let i = 0; i < this.headers.length; i++) {
         const th = document.createElement('th');
-        th.textContent = headerText;
+        th.textContent = this.headers[i];
+        th.style.textAlign = this.alignments[i] || 'left';
         headerRow.appendChild(th);
     }
 
@@ -40,6 +43,7 @@ class TableWidget extends WidgetType {
         for (let i = 0; i < this.headers.length; i++) {
             const cell = row.insertCell();
             cell.textContent = rowData[i] || "";
+            cell.style.textAlign = this.alignments[i] || 'left';
         }
     }
 
@@ -71,6 +75,7 @@ function tableRender(view: EditorView): DecorationSet {
 
                 const headers: string[] = [];
                 const rows: string[][] = [];
+                const alignments: Alignment[] = [];
                 const tableNode = node.node;
 
                 const headerNode = tableNode.getChild("TableHeader");
@@ -83,6 +88,24 @@ function tableRender(view: EditorView): DecorationSet {
                         cell = cell.nextSibling;
                     }
                 }
+
+                const delimiterNode = tableNode.getChild("TableDelimiter");
+                if (delimiterNode) {
+                    const delimiterText = text.substring(delimiterNode.from, delimiterNode.to);
+                    const parts = delimiterText.split('|').map(s => s.trim()).filter(s => s.length > 0);
+                    for (const part of parts) {
+                        const left = part.startsWith(':');
+                        const right = part.endsWith(':');
+                        if (left && right) {
+                            alignments.push('center');
+                        } else if (right) {
+                            alignments.push('right');
+                        } else {
+                            alignments.push('left');
+                        }
+                    }
+                }
+
 
                 let child = tableNode.firstChild;
                 while (child) {
@@ -101,7 +124,7 @@ function tableRender(view: EditorView): DecorationSet {
                 }
 
                 const tableDecoration = Decoration.widget({
-                    widget: new TableWidget(headers, rows),
+                    widget: new TableWidget(headers, rows, alignments),
                     side: 1,
                 });
                 widgets.push(tableDecoration.range(node.to));
