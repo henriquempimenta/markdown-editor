@@ -7,12 +7,12 @@ import 'katex/dist/katex.min.css'
 
 const LATEX_TAGS = ["InlineMathDollar", "InlineMathBracket", "BlockMathDollar", "BlockMathBracket"]
 
-class LatetWidget extends WidgetType {
+class LatexWidget extends WidgetType {
   constructor(readonly math: string, readonly displayMode: boolean = false){
     super()
   }
 
-  eq(other: LatetWidget) {
+  eq(other: LatexWidget) {
     return other.math === this.math
   }
 
@@ -54,7 +54,7 @@ function latexRender(view: EditorView) {
           node.to - DELIMITER_LENGTH[node.type.name]
         )
         const latexDecoration = Decoration.widget({
-            widget: new LatetWidget(math, node.type.name.startsWith("Block")),
+            widget: new LatexWidget(math, node.type.name.startsWith("Block")),
             side: 1
           })
         widgets.push(latexDecoration.range(node.to))
