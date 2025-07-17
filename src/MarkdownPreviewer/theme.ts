@@ -3,7 +3,41 @@ import { Extension } from "@uiw/react-codemirror";
 import { tags as t } from "@lezer/highlight";
 import { createTheme } from "@uiw/codemirror-themes";
 
-export const theme: Extension = createTheme({
+export const lightTheme = createTheme({
+    theme: 'light',
+    settings: {
+      background: '#ffffff',
+      foreground: '#24292e',
+      caret: '#526fff',
+      selection: '#0366d626',
+      lineHighlight: '#f6f8fa',
+      gutterBackground: '#ffffff',
+      gutterForeground: '#6a737d',
+    },
+    styles: [
+      { tag: t.heading, color: '#0366d6' },
+      { tag: t.strong, fontWeight: 'bold' },
+      { tag: t.emphasis, fontStyle: 'italic' },
+      { tag: t.link, color: '#0366d6' },
+      { tag: t.quote, color: '#22863a' },
+      { tag: t.monospace, color: '#e36209' },
+      { tag: t.list, color: '#24292e' },
+      { tag: t.keyword, color: '#d73a49' },
+      { tag: t.atom, color: '#005cc5' },
+      { tag: t.number, color: '#005cc5' },
+      { tag: t.string, color: '#032f62' },
+      { tag: t.comment, color: '#6a737d', fontStyle: 'italic' },
+      { tag: t.meta, color: '#0366d6' },
+      { tag: t.regexp, color: '#032f62' },
+      { tag: t.tagName, color: '#22863a' },
+      { tag: t.attributeName, color: '#6f42c1' },
+      { tag: t.attributeValue, color: '#032f62' },
+      { tag: t.className, color: '#6f42c1' },
+      { tag: t.propertyName, color: '#005cc5' },
+    ],
+});
+
+export const darkTheme: Extension = createTheme({
     theme: 'dark',
     settings: {
       background: '#1e1e1e',
