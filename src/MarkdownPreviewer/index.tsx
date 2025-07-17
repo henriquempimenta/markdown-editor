@@ -3,6 +3,7 @@ import CodeMirror, { EditorView, Extension } from '@uiw/react-codemirror';
 import { languages } from '@codemirror/language-data'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { markdownMathSupport } from './markdownMathSupport';
+import { theme, EDITOR_VIEW_THEME } from './theme';
 import './style.css'
 
 const CODE_MIRROR_EXTENSIONS: Extension[] = [
@@ -19,25 +20,10 @@ const CODE_MIRROR_EXTENSIONS: Extension[] = [
   hideTablePlugin,
 ];
 
-const EDITOR_VIEW_THEME: Extension = EditorView.theme({
-  '.cm-scroller': {
-    overflow: 'hidden',
-    fontFamily: '"Roboto", sans-serif',
-  },
-  '.cm-lineNumbers': {
-    display: 'none',
-  },
-  '.cm-gutters': {
-    display: 'none',
-  },
-  '.cm-activeLine': {
-    backgroundColor: 'unset',
-  },
-});
-
 export default function MarkdownPreview() {
   return (
     <CodeMirror
+      theme={theme}
       extensions={[
         ...CODE_MIRROR_EXTENSIONS,
         EditorView.lineWrapping,
