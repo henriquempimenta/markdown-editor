@@ -6,4 +6,5 @@ export * from './resizeHeaders'
 export * from './codeMono'
 export * from './hideHeadersMarkers'
 export * from './hideCodeMarkers'
-export * from './tableStyling'
+export { tableStylingPlugin } from "./tableStyling";
+export { hideTablePlugin } from "./hideTable";

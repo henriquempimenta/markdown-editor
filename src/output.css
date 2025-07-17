@@ -558,6 +558,10 @@ video {
   display: inline;
 }
 
+.table {
+  display: table;
+}
+
 .hidden {
   display: none;
 }

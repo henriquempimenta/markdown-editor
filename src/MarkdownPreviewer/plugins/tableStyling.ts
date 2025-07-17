@@ -53,7 +53,6 @@ class TableWidget extends WidgetType {
 
 function tableRender(view: EditorView): DecorationSet {
     const widgets: Range<Decoration>[] = [];
-    const marks: Range<Decoration>[] = [];
     const cursorPos = view.state.selection.main.head;
     const text = view.state.doc.toString();
 
@@ -100,8 +99,6 @@ function tableRender(view: EditorView): DecorationSet {
                     }
                     child = child.nextSibling;
                 }
-                
-                marks.push(Decoration.mark({ style: "display: none;" }).range(node.from, node.to));
 
                 const tableDecoration = Decoration.widget({
                     widget: new TableWidget(headers, rows),
@@ -112,7 +109,7 @@ function tableRender(view: EditorView): DecorationSet {
         });
     }
 
-    return Decoration.set([...widgets, ...marks], true);
+    return Decoration.set(widgets, true);
 }
 
 

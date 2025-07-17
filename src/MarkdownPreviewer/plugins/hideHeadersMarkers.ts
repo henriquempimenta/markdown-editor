@@ -2,6 +2,9 @@ import { Decoration, DecorationSet, Range, ViewPlugin, ViewUpdate } from '@uiw/r
 import { EditorView } from '@uiw/react-codemirror'
 import { syntaxTree } from '@codemirror/language'
 
+/**
+ * The colors are for debug only
+ */
 const hideBlue = Decoration.mark({
   attributes: {
     style: "background-color: blue !important; display: none;"
