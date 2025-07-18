@@ -1,4 +1,4 @@
-import { codeMonoPlugin, hideHeadersMarkersPlugin, hideMarkersPlugin, resizeHeadersPlugin, latexRenderPlugin, latexHidePlugin as latexHidePlugin, syntaxTreeHierarchyPlugin, hideCodeMarkersPlugin, tableStylingPlugin as tableStylingPlugin, hideTablePlugin } from './plugins'
+import { codeMonoPlugin, hideHeadersMarkersPlugin, hideMarkersPlugin, resizeHeadersPlugin, latexRenderPlugin, latexHidePlugin as latexHidePlugin, syntaxTreeHierarchyPlugin, hideCodeMarkersPlugin, tableStylingPlugin as tableStylingPlugin, hideTablePlugin, EmphasisPlugin } from './plugins'
 import CodeMirror, { EditorView, Extension } from '@uiw/react-codemirror';
 import { languages } from '@codemirror/language-data'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
@@ -19,6 +19,7 @@ const CODE_MIRROR_EXTENSIONS: Extension[] = [
   hideCodeMarkersPlugin,
   tableStylingPlugin,
   hideTablePlugin,
+  EmphasisPlugin,
 ];
 
 export default function MarkdownPreview() {
