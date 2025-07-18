@@ -9,3 +9,5 @@ export * from './hideCodeMarkers'
 export { EmphasisPlugin } from './Emphasis'
 export { tableStylingPlugin } from "./tableStyling";
 export { hideTablePlugin } from "./hideTable";
+export { emojiPlugin } from './emoji';
+export { latexPreviewPlugin } from './latexPreview';
