@@ -43,6 +43,7 @@ function hideMarkers(view: EditorView) {
       },
     })
   }
+  marks.sort((a, b) => a.from - b.from) // Sort marks by their starting position to avoid crashes
   return Decoration.set(marks)
 }
 
