@@ -7,6 +7,16 @@ import 'katex/dist/katex.min.css'
 
 const LATEX_TAGS = ["InlineMathDollar", "InlineMathBracket", "BlockMathDollar", "BlockMathBracket"]
 
+const hideGreen = Decoration.mark({
+  attributes: {
+    style: "background-color: green !important; display: none;"
+  }
+})
+
+/**
+ * A widget to render LaTeX math expressions in the editor.
+ * It uses KaTeX to render the math expressions.
+ */
 class LatexWidget extends WidgetType {
   constructor(readonly math: string, readonly displayMode: boolean = false){
     super()
@@ -53,11 +63,19 @@ function latexRender(view: EditorView) {
           node.from + DELIMITER_LENGTH[node.type.name],
           node.to - DELIMITER_LENGTH[node.type.name]
         )
-        const latexDecoration = Decoration.widget({
-            widget: new LatexWidget(math, node.type.name.startsWith("Block")),
+        const isBlock = node.type.name.startsWith('Block')
+        const attr = {
+            widget: new LatexWidget(math, isBlock),
             side: 1
-          })
-        widgets.push(latexDecoration.range(node.to))
+        }
+        if (isBlock) {
+          const latexDecoration = Decoration.widget(attr)
+          widgets.push(hideGreen.range(node.from, node.to))
+          widgets.push(latexDecoration.range(node.to))
+        } else {
+          const latexDecoration = Decoration.replace(attr)
+          widgets.push(latexDecoration.range(node.from, node.to))
+        }
       }
     })
   }

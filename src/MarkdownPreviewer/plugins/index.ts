@@ -1,5 +1,4 @@
 export * from './latexRender'
-export * from './latexHide'
 export * from './syntaxTreeHierarchy'
 export * from './hideMarkers'
 export * from './resizeHeaders'
@@ -11,3 +10,4 @@ export { tableStylingPlugin } from "./tableStyling";
 export { hideTablePlugin } from "./hideTable";
 export { emojiPlugin } from './emoji';
 export { latexPreviewPlugin } from './latexPreview';
+export { taskListPlugin } from './taskList';
