@@ -68,14 +68,9 @@ function latexRender(view: EditorView) {
             widget: new LatexWidget(math, isBlock),
             side: 1
         }
-        if (isBlock) {
-          const latexDecoration = Decoration.widget(attr)
-          widgets.push(hideGreen.range(node.from, node.to))
-          widgets.push(latexDecoration.range(node.to))
-        } else {
-          const latexDecoration = Decoration.replace(attr)
-          widgets.push(latexDecoration.range(node.from, node.to))
-        }
+        const latexDecoration = Decoration.widget(attr)
+        widgets.push(hideGreen.range(node.from, node.to))
+        widgets.push(latexDecoration.range(node.to))
       }
     })
   }
