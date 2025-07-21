@@ -1,4 +1,4 @@
-import { codeMonoPlugin, hideHeadersMarkersPlugin, hideMarkersPlugin, resizeHeadersPlugin, latexRenderPlugin, latexPreviewPlugin, syntaxTreeHierarchyPlugin, hideCodeMarkersPlugin, tableStylingPlugin as tableStylingPlugin, hideTablePlugin, EmphasisPlugin, emojiPlugin, taskListPlugin } from './plugins'
+import { codeMonoPlugin, hideHeadersMarkersPlugin, hideMarkersPlugin, resizeHeadersPlugin, latexRenderPlugin, latexPreviewPlugin, syntaxTreeHierarchyPlugin, hideCodeMarkersPlugin, tableStylingPlugin as tableStylingPlugin, hideTablePlugin, EmphasisPlugin, emojiPlugin, taskListPlugin, saveToLocalStoragePlugin } from './plugins'
 import CodeMirror, { EditorView, Extension } from '@uiw/react-codemirror';
 import { languages } from '@codemirror/language-data'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
@@ -22,9 +22,10 @@ const CODE_MIRROR_EXTENSIONS: Extension[] = [
   EmphasisPlugin,
   emojiPlugin,
   taskListPlugin,
+  saveToLocalStoragePlugin
 ];
 
-export default function MarkdownPreview() {
+export default function MarkdownPreview({ doc }: { doc: string }) {
   const [theme, setTheme] = useState(window.matchMedia('(prefers-color-scheme: light)').matches ? darkTheme : lightTheme);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export default function MarkdownPreview() {
 
   return (
     <CodeMirror
+      value={doc}
       theme={theme}
       extensions={[
         ...CODE_MIRROR_EXTENSIONS,

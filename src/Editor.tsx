@@ -6,7 +6,7 @@ export default function Editor(attrs: any) {
     return (
         <div {...attrs}>
             <Suspense fallback={<Loading/>}>
-                <Mark/>
+                <Mark doc={localStorage.getItem('markdown') || ''}/>
             </Suspense>
         </div>
     )
