@@ -1,8 +1,12 @@
 import { codeMonoPlugin, hideMarkersPlugin, resizeHeadersPlugin, latexRenderPlugin, latexPreviewPlugin, syntaxTreeHierarchyPlugin, hideCodeMarkersPlugin, tableStylingPlugin as tableStylingPlugin, hideTablePlugin, EmphasisPlugin, emojiPlugin, taskListPlugin, saveToLocalStoragePlugin, imagePlugin } from './plugins'
 import CodeMirror, { EditorView, Extension } from '@uiw/react-codemirror';
+import { EditorSelection, ChangeSpec } from '@codemirror/state';
 import { toolbar } from './plugins/toolbar';
 import * as Items from './plugins/toolbar/items';
-import * as MarkdownItems from './plugins/toolbar/items/markdown';
+import { bold, italic, strike, underline } from './plugins/toolbar/items/basic-formatting';
+import { h1, h2, h3, h4, h5, h6 } from './plugins/toolbar/items/headings';
+import { quote, ul, ol, todo } from './plugins/toolbar/items/lists';
+import { link, image } from './plugins/toolbar/items/media';
 import { languages } from '@codemirror/language-data'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { markdownMathSupport } from './markdownMathSupport';
@@ -29,31 +33,58 @@ const CODE_MIRROR_EXTENSIONS: Extension[] = [
   imagePlugin,
   toolbar({
     items: [
-      MarkdownItems.bold,
-      MarkdownItems.italic,
-      MarkdownItems.strike,
-      MarkdownItems.underline,
+      bold,
+      italic,
+      strike,
+      underline,
       Items.split,
-      MarkdownItems.h1,
-      MarkdownItems.h2,
-      MarkdownItems.h3,
-      MarkdownItems.h4,
-      MarkdownItems.h5,
-      MarkdownItems.h6,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
       Items.split,
-      MarkdownItems.quote,
-      MarkdownItems.ul,
-      MarkdownItems.ol,
-      MarkdownItems.todo,
+      quote,
+      ul,
+      ol,
+      todo,
       Items.split,
-      MarkdownItems.link,
+      link,
       {
-        ...MarkdownItems.image,
+        ...image,
         command: (view: EditorView) => {
-          view.dispatch({
-            // ...
-          });
+          const { state, dispatch } = view;
+          const { from, to } = state.selection.main;
+          const text = state.sliceDoc(from, to);
+          const changes: ChangeSpec[] = [];
+          let selectionStart = from;
+          let selectionEnd = to;
 
+          if (text.startsWith('!') && text.endsWith(')')) {
+            // Remove image markdown
+            changes.push(
+              { from: from, to: from + 1, insert: '' }, // Remove !
+              { from: to - 1, to: to, insert: '' }, // Remove )
+            );
+            selectionStart = from;
+            selectionEnd = to - 2;
+          } else {
+            // Add image markdown
+            changes.push(
+              { from: from, insert: '![](' },
+              { from: to, insert: ')' },
+            );
+            selectionStart = from + 4;
+            selectionEnd = to + 4;
+          }
+
+          dispatch(state.update({
+            changes,
+            selection: EditorSelection.create([EditorSelection.range(selectionStart, selectionEnd)]),
+          }));
+
+          view.focus();
           return true;
         }
       },

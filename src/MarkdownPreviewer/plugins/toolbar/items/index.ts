@@ -1,6 +1,11 @@
 import { type ToolbarSplit, type ToolbarSpace, type ToolbarItem } from '../types';
 import { type Command } from '@codemirror/view';
 
+export * from './basic-formatting';
+export * from './headings';
+export * from './lists';
+export * from './media';
+
 export const split: ToolbarSplit = {
     type: 'split',
 };
