@@ -1,5 +1,8 @@
 import { codeMonoPlugin, hideMarkersPlugin, resizeHeadersPlugin, latexRenderPlugin, latexPreviewPlugin, syntaxTreeHierarchyPlugin, hideCodeMarkersPlugin, tableStylingPlugin as tableStylingPlugin, hideTablePlugin, EmphasisPlugin, emojiPlugin, taskListPlugin, saveToLocalStoragePlugin, imagePlugin } from './plugins'
 import CodeMirror, { EditorView, Extension } from '@uiw/react-codemirror';
+import { toolbar } from '../toolbar';
+import * as Items from '../toolbar/items';
+import * as MarkdownItems from '../toolbar/items/markdown';
 import { languages } from '@codemirror/language-data'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { markdownMathSupport } from './markdownMathSupport';
@@ -22,7 +25,41 @@ const CODE_MIRROR_EXTENSIONS: Extension[] = [
   emojiPlugin,
   taskListPlugin,
   saveToLocalStoragePlugin,
-  imagePlugin
+  imagePlugin,
+  toolbar({
+    items: [
+      MarkdownItems.bold,
+      MarkdownItems.italic,
+      MarkdownItems.strike,
+      MarkdownItems.underline,
+      Items.split,
+      MarkdownItems.h1,
+      MarkdownItems.h2,
+      MarkdownItems.h3,
+      MarkdownItems.h4,
+      MarkdownItems.h5,
+      MarkdownItems.h6,
+      Items.split,
+      MarkdownItems.quote,
+      MarkdownItems.ul,
+      MarkdownItems.ol,
+      MarkdownItems.todo,
+      Items.split,
+      MarkdownItems.link,
+      {
+        ...MarkdownItems.image,
+        command: (view: EditorView) => {
+          view.dispatch({
+            // ...
+          });
+
+          return true;
+        }
+      },
+      Items.space,
+      Items.fullScreen,
+    ],
+  }),
 ];
 
 export default function MarkdownPreview({ doc }: { doc: string }) {
