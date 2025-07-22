@@ -1,5 +1,5 @@
 import { EditorState } from '@codemirror/state';
-import { markdown } from '@codemirror/lang-markdown';
+import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { EmphasisPlugin } from './Emphasis';
 import { Decoration, EditorView } from '@codemirror/view';
 import { describe, it, expect } from 'vitest';
@@ -8,7 +8,7 @@ describe('EmphasisPlugin', () => {
   const createEditorState = (doc: string) => {
     return EditorState.create({
       doc,
-      extensions: [markdown(), EmphasisPlugin],
+      extensions: [markdown({ base: markdownLanguage }), EmphasisPlugin],
     });
   };
 

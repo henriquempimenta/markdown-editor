@@ -2,6 +2,12 @@ import { Decoration, DecorationSet, EditorView, ViewPlugin, ViewUpdate, WidgetTy
 import { syntaxTree } from "@codemirror/language";
 import { Range } from "@codemirror/state";
 
+const monoFamily = Decoration.mark({
+    attributes: {
+        style: "font-family: monomonospace, monospace !important;"
+    }
+})
+
 type Alignment = 'left' | 'center' | 'right';
 
 class TableWidget extends WidgetType {
@@ -68,6 +74,8 @@ function tableRender(view: EditorView): DecorationSet {
                 if (node.name !== "Table") {
                     return;
                 }
+
+                widgets.push(monoFamily.range(node.from, node.to));
 
                 if (node.from <= cursorPos && cursorPos <= node.to) {
                     return;
