@@ -4,7 +4,7 @@ import { Range } from "@codemirror/state";
 
 const monoFamily = Decoration.mark({
     attributes: {
-        style: "font-family: monomonospace, monospace !important;"
+        style: "font-family: monospace !important;"
     }
 })
 

@@ -85,4 +85,7 @@ export const EDITOR_VIEW_THEME: Extension = EditorView.theme({
     '.cm-activeLine': {
       backgroundColor: 'unset',
     },
+    "&.cm-editor": {
+      paddingBottom: "50vh",
+    },
   });

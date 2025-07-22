@@ -54,7 +54,8 @@ function latexPreviewRender(view: EditorView) {
                 widget: new LatexPreviewWidget(math, isBlock),
                 side: 1
             })
-            widgets.push(latexPreviewDecoration.range(node.to))
+            const line = view.state.doc.lineAt(node.from)
+            widgets.push(latexPreviewDecoration.range(line.to))
         }
       }
     })

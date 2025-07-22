@@ -26,10 +26,10 @@ const CODE_MIRROR_EXTENSIONS: Extension[] = [
 ];
 
 export default function MarkdownPreview({ doc }: { doc: string }) {
-  const [theme, setTheme] = useState(window.matchMedia('(prefers-color-scheme: light)').matches ? darkTheme : lightTheme);
+  const [theme, setTheme] = useState(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkTheme : lightTheme);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e: MediaQueryListEvent) => {
       setTheme(e.matches ? darkTheme : lightTheme);
     };

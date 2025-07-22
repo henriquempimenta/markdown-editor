@@ -24,15 +24,16 @@
 .cm-latex-preview {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(-100%);
   background: Canvas;
   color: CanvasText;
   border: 1px solid #ccc;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   padding: 10px;
   border-radius: 5px;
-  margin-top: 10px;
+  margin-top: -10px;
   z-index: 100;
   max-width: 90vw;
-  overflow-x: auto;
+  max-height: 50vh;
+  overflow: auto;
 }
