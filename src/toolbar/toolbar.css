@@ -1,0 +1,41 @@
+.cm-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 4px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f5f5f5;
+}
+
+.cm-toolbar-item {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 8px;
+    margin: 0 2px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #333;
+}
+
+.cm-toolbar-item:hover {
+    background-color: #e0e0e0;
+}
+
+.cm-toolbar-item:active {
+    background-color: #d0d0d0;
+}
+
+.cm-toolbar-split {
+    width: 1px;
+    height: 24px;
+    background-color: #ccc;
+    margin: 0 8px;
+}
+
+.cm-toolbar-space {
+    flex: 1;
+}
