@@ -11,3 +11,4 @@ export { emojiPlugin } from './emoji';
 export { latexPreviewPlugin } from './latexPreview';
 export * from './taskList'
 export * from './saveToLocalStorage'
+export * from './image'
