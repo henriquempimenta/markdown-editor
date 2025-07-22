@@ -26,6 +26,7 @@
     "@codemirror/view": "^6.35.0",
     "@uiw/codemirror-themes": "^4.24.1",
     "@uiw/react-codemirror": "^4.23.6",
+    "gemoji": "^8.1.0",
     "gh-pages": "^6.3.0",
     "katex": "^0.16.21",
     "react": "^18.3.1",
