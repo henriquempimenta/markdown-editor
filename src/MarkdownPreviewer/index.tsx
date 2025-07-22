@@ -1,13 +1,14 @@
 import { codeMonoPlugin, hideMarkersPlugin, resizeHeadersPlugin, latexRenderPlugin, latexPreviewPlugin, syntaxTreeHierarchyPlugin, hideCodeMarkersPlugin, tableStylingPlugin as tableStylingPlugin, hideTablePlugin, EmphasisPlugin, emojiPlugin, taskListPlugin, saveToLocalStoragePlugin, imagePlugin } from './plugins'
 import CodeMirror, { EditorView, Extension } from '@uiw/react-codemirror';
-import { toolbar } from '../toolbar';
-import * as Items from '../toolbar/items';
-import * as MarkdownItems from '../toolbar/items/markdown';
+import { toolbar } from './plugins/toolbar';
+import * as Items from './plugins/toolbar/items';
+import * as MarkdownItems from './plugins/toolbar/items/markdown';
 import { languages } from '@codemirror/language-data'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { markdownMathSupport } from './markdownMathSupport';
 import { lightTheme, darkTheme, EDITOR_VIEW_THEME } from './theme';
 import './style.css'
+import './plugins/toolbar/toolbar.css';
 import { useEffect, useState } from 'react';
 
 const CODE_MIRROR_EXTENSIONS: Extension[] = [
