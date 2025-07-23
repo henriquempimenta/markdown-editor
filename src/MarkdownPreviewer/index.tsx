@@ -1,4 +1,4 @@
-import { codeMonoPlugin, hideMarkersPlugin, resizeHeadersPlugin, latexRenderPlugin, latexPreviewPlugin, syntaxTreeHierarchyPlugin, hideCodeMarkersPlugin, tableStylingPlugin as tableStylingPlugin, hideTablePlugin, EmphasisPlugin, emojiPlugin, taskListPlugin, saveToLocalStoragePlugin, imagePlugin } from './plugins'
+import { codeMonoPlugin, hideMarkersPlugin, resizeHeadersPlugin, latexRenderPlugin, latexPreviewPlugin, syntaxTreeHierarchyPlugin, hideCodeMarkersPlugin, tableStylingPlugin as tableStylingPlugin, hideTablePlugin, EmphasisPlugin, emojiPlugin, taskListPlugin, saveToLocalStoragePlugin, imagePlugin, horizontalRulePlugin } from './plugins'
 import CodeMirror, { EditorView, Extension } from '@uiw/react-codemirror';
 import { EditorSelection, ChangeSpec } from '@codemirror/state';
 import { toolbar } from './plugins/toolbar';
@@ -31,6 +31,7 @@ const CODE_MIRROR_EXTENSIONS: Extension[] = [
   taskListPlugin,
   saveToLocalStoragePlugin,
   imagePlugin,
+  horizontalRulePlugin,
   toolbar({
     items: [
       bold,

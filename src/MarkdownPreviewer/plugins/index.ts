@@ -12,3 +12,4 @@ export { latexPreviewPlugin } from './latexPreview';
 export * from './taskList'
 export * from './saveToLocalStorage'
 export * from './image'
+export * from './horizontalRule'
