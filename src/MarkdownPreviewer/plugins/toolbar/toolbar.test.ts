@@ -1,6 +1,6 @@
-import { EditorState } from '@codemirror/state';
-import { EditorView, Extension } from '@codemirror/view';
+import { EditorState, Extension } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
+import { EditorView } from '@codemirror/view';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { toolbar } from '../toolbar';
 import { bold } from './items/basic-formatting';
